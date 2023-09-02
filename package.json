@@ -10,6 +10,7 @@
     "access": "public"
   },
   "devDependencies": {
-    "arweave": "^1.14.4"
+    "arweave": "^1.14.4",
+    "mitt": "^3.0.1"
   }
 }

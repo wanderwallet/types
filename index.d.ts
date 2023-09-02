@@ -1,16 +1,25 @@
-import { SignatureOptions } from "arweave/node/lib/crypto/crypto-interface";
-import Transaction from "arweave/node/lib/transaction";
+import type { SignatureOptions } from "arweave/node/lib/crypto/crypto-interface";
+import type Transaction from "arweave/node/lib/transaction";
+import type { Emitter } from "mitt";
 
 /**
  * Arweave wallet declarations
  */
 declare global {
   interface Window {
+    /**
+     * Documentation for this API is available at https://docs.arconnect.io
+     */
     arweaveWallet: {
       /**
        * Name of the wallet the API was provided by.
        */
       walletName: string;
+
+      /**
+       * Semver type version of the wallet
+       */
+      walletVersion: string;
 
       /**
        * Connect to ArConnect and request permissions. This function can always be
@@ -117,12 +126,7 @@ declare global {
       }>;
 
       /**
-       * Get the signature for data array
-       *
-       * @param data `Uint8Array` data to get the signature for
-       * @param algorithm
-       *
-       * @returns Promise of signature
+       * @deprecated Find alternatives at https://docs.arconnect.io/api/signature
        */
       signature(
         data: Uint8Array,
@@ -141,16 +145,83 @@ declare global {
        * Add a token to ArConnect (if it is not already present)
        *
        * @param id Token contract ID
+       * @param type Type of the token (asset or collectible)
+       * @param gateway Gateway config for the token
        */
-      addToken(id: string): Promise<void>;
+      addToken(id: string, type?: TokenType, gateway?: GatewayConfig): Promise<void>;
+
+      /**
+       * Checks if a token has been added to ArConnect
+       * 
+       * @param id Token to check for
+       * 
+       * @returns Token added or not
+       */
+      isTokenAdded(id: string): Promise<boolean>;
 
       /**
        * Dispatch an Arweave transaction (preferably bundled)
        *
        * @param transaction Transaction to dispatch
+       * 
        * @returns Dispatched transaction ID and type
        */
       dispatch(transaction: Transaction): Promise<DispatchResult>;
+
+      /**
+       * Create a deterministic secret based on the input data.
+       * 
+       * @param data Input data to generate the hash from
+       * @param options Hash configuration
+       * 
+       * @returns Hash array
+       */
+      privateHash(data: ArrayBuffer, options: SignMessageOptions): Promise<Uint8Array>;
+
+      /**
+       * Create and sign a DataItem (bundled transaction item),
+       * that can be loaded into "arbundles".
+       * 
+       * @param dataItem Data item params
+       * 
+       * @returns Buffer of the signed data item
+       */
+      signDataItem(dataItem: DataItem): Promise<ArrayBufferLike>;
+
+      /**
+       * Create a cryptographic signature for any piece of data for later validation.
+       * This function cannot be used to sign transactions or interactions, because the data
+       * gets hashed before the signature generation.
+       * 
+       * @param data Message to be hashed and signed
+       * @param options Signature options
+       * 
+       * @returns Signature
+       */
+      signMessage(data: ArrayBuffer, options?: SignMessageOptions): Promise<Uint8Array>;
+
+      /**
+       * Verify a cryptographic signature created with the arweaveWallet.signMessage() function.
+       * 
+       * @param data Data to verify with the signature
+       * @param signature Signature to validate
+       * @param publicKey Optionally match the signature with a different public key than the currently active
+       * @param options Signature options
+       * 
+       * @returns Validity
+       */
+      verifyMessage(
+        data: ArrayBuffer,
+        signature: ArrayBuffer | string,
+        publicKey?: string,
+        options?: SignMessageOptions
+      ): Promise<boolean>;
+
+      /**
+       * Experimental event emitter. Allows listening to gateway config
+       * updates, bundler node changes, etc.
+       */
+      events: Emitter<InjectedEvents>;
     };
   }
   interface WindowEventMap {
@@ -187,6 +258,34 @@ export interface GatewayConfig {
   host: string;
   port: number;
   protocol: "http" | "https";
+}
+
+/**
+ * Available injected event types
+ */
+export interface InjectedEvents {
+  connect: null;
+  disconnect: null;
+  activeAddress: string;
+  addresses: string[];
+  permissions: PermissionType[];
+  gateway: Gateway;
+}
+
+export type TokenType = "asset" | "collectible";
+
+export interface SignMessageOptions {
+  hashAlgorithm?: "SHA-256" | "SHA-384" | "SHA-512";
+}
+
+export interface DataItem {
+  data: string | Uint8Array;
+  target?: string;
+  anchor?: string;
+  tags?: {
+    name: string;
+    value: string;
+  }[];
 }
 
 export {};
