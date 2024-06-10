@@ -17,3 +17,5 @@ export const SubscriptionStatus = {
   CANCELED: "Canceled",
   AWAITING_PAYMENT: "Awaiting-Payment",
 };
+
+export default { RecurringPaymentFrequency, SubscriptionStatus };
