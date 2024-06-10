@@ -217,6 +217,16 @@ declare global {
         options?: SignMessageOptions
       ): Promise<boolean>;
 
+
+      /**
+       * Create subscription to applications that are charged on a periodic basis
+       * such as monthly, weekly, or quarterly.
+       * 
+       * @param data Data to create a new subscription
+       * @returns Subscription data
+       */
+      subscription(data: SubscriptionCreateData): Promise<SubscriptionData>
+
       /**
        * Experimental event emitter. Allows listening to gateway config
        * updates, bundler node changes, etc.
@@ -288,4 +298,69 @@ export interface DataItem {
   }[];
 }
 
-export {};
+/** Subscription types */
+
+/**
+ * Enum for recurring payment frequency
+ */
+export enum RecurringPaymentFrequency {
+  QUARTERLY = "Quarterly",
+  MONTHLY = "Monthly",
+  WEEKLY = "Weekly",
+  DAILY = "Daily"
+}
+
+
+/**
+ * Enum for subscription status
+ */
+export enum SubscriptionStatus {
+  ACTIVE = "Active",
+  EXPIRED = "Expired",
+  CANCELED = "Canceled",
+  AWAITING_PAYMENT = "Awaiting-Payment"
+}
+
+/**
+ * Payment history entry
+ */
+export interface PaymentHistoryEntry {
+  txId: string;
+  date: Date;
+}
+
+/**
+ * Subscription data
+ */
+export interface SubscriptionData {
+  arweaveAccountAddress: string;
+  applicationIcon?: string;
+  applicationName: string;
+  subscriptionName: string;
+  subscriptionFeeAmount: number;
+  applicationAutoRenewal: boolean;
+  applicationAllowance: number;
+  subscriptionStatus?: SubscriptionStatus;
+  recurringPaymentFrequency: RecurringPaymentFrequency;
+  nextPaymentDue: Date | string;
+  subscriptionManagementUrl: string;
+  subscriptionStartDate?: Date | string;
+  subscriptionEndDate: Date | string;
+  paymentHistory?: PaymentHistoryEntry[];
+}
+
+/**
+ * Data to create a new subscription
+ */
+export interface SubscriptionCreateData {
+  arweaveAccountAddress: string;
+  applicationName: string;
+  subscriptionName: string;
+  subscriptionManagementUrl: string;
+  subscriptionFeeAmount: number;
+  recurringPaymentFrequency: RecurringPaymentFrequency;
+  subscriptionEndDate: Date;
+  applicationIcon: string;
+}
+
+export { };
