@@ -155,21 +155,13 @@ declare global {
       ): Promise<void>;
 
       /**
-       * Query tokens added to a user's active wallet
+       * Retrieves tokens from the user's active wallet
        *
-       * @param options - Optional parameters for the query
-       * @returns A Promise that resolves to an array of TokenInfo objects
+       * @param options - Optional parameters:
+       *  - `fetchBalance` (boolean): Whether to include token balances. Defaults to `false`.
+       * @returns A Promise resolving to an array of token information objects (`UserTokensResult`).
        */
-      userTokens(options?: { fetchBalance?: boolean }): Promise<
-        {
-          Name?: string;
-          Ticker?: string;
-          Logo?: string;
-          Denomination: number;
-          processId?: string;
-          balance?: string;
-        }[]
-      >;
+      userTokens(options?: UserTokensOptions): Promise<UserTokensResult>;
 
       /**
        * Checks if a token has been added to ArConnect
@@ -269,7 +261,8 @@ export type PermissionType =
   | "DECRYPT"
   | "SIGNATURE"
   | "ACCESS_ARWEAVE_CONFIG"
-  | "DISPATCH";
+  | "DISPATCH"
+  | "ACCESS_TOKENS";
 
 export interface DispatchResult {
   id: string;
@@ -315,4 +308,17 @@ export interface DataItem {
   }[];
 }
 
-export {};
+export interface UserTokensOptions {
+  fetchBalance?: boolean;
+}
+
+export type UserTokensResult = Array<{
+  Name?: string;
+  Ticker?: string;
+  Logo?: string;
+  Denomination: number;
+  processId: string;
+  balance?: string | null;
+}>
+
+export { };
