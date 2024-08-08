@@ -148,13 +148,26 @@ declare global {
        * @param type Type of the token (asset or collectible)
        * @param gateway Gateway config for the token
        */
-      addToken(id: string, type?: TokenType, gateway?: GatewayConfig): Promise<void>;
+      addToken(
+        id: string,
+        type?: TokenType,
+        gateway?: GatewayConfig
+      ): Promise<void>;
+
+      /**
+       * Retrieves tokens from the user's active wallet
+       *
+       * @param options - Optional parameters:
+       *  - `fetchBalance` (boolean): Whether to include token balances. Defaults to `false`.
+       * @returns A Promise resolving to an array of token information objects (`UserTokensResult`).
+       */
+      userTokens(options?: UserTokensOptions): Promise<UserTokensResult>;
 
       /**
        * Checks if a token has been added to ArConnect
-       * 
+       *
        * @param id Token to check for
-       * 
+       *
        * @returns Token added or not
        */
       isTokenAdded(id: string): Promise<boolean>;
@@ -163,27 +176,30 @@ declare global {
        * Dispatch an Arweave transaction (preferably bundled)
        *
        * @param transaction Transaction to dispatch
-       * 
+       *
        * @returns Dispatched transaction ID and type
        */
       dispatch(transaction: Transaction): Promise<DispatchResult>;
 
       /**
        * Create a deterministic secret based on the input data.
-       * 
+       *
        * @param data Input data to generate the hash from
        * @param options Hash configuration
-       * 
+       *
        * @returns Hash array
        */
-      privateHash(data: ArrayBuffer, options: SignMessageOptions): Promise<Uint8Array>;
+      privateHash(
+        data: ArrayBuffer,
+        options: SignMessageOptions
+      ): Promise<Uint8Array>;
 
       /**
        * Create and sign a DataItem (bundled transaction item),
        * that can be loaded into "arbundles".
-       * 
+       *
        * @param dataItem Data item params
-       * 
+       *
        * @returns Buffer of the signed data item
        */
       signDataItem(dataItem: DataItem): Promise<ArrayBufferLike>;
@@ -192,22 +208,25 @@ declare global {
        * Create a cryptographic signature for any piece of data for later validation.
        * This function cannot be used to sign transactions or interactions, because the data
        * gets hashed before the signature generation.
-       * 
+       *
        * @param data Message to be hashed and signed
        * @param options Signature options
-       * 
+       *
        * @returns Signature
        */
-      signMessage(data: ArrayBuffer, options?: SignMessageOptions): Promise<Uint8Array>;
+      signMessage(
+        data: ArrayBuffer,
+        options?: SignMessageOptions
+      ): Promise<Uint8Array>;
 
       /**
        * Verify a cryptographic signature created with the arweaveWallet.signMessage() function.
-       * 
+       *
        * @param data Data to verify with the signature
        * @param signature Signature to validate
        * @param publicKey Optionally match the signature with a different public key than the currently active
        * @param options Signature options
-       * 
+       *
        * @returns Validity
        */
       verifyMessage(
@@ -217,15 +236,14 @@ declare global {
         options?: SignMessageOptions
       ): Promise<boolean>;
 
-
       /**
        * Create subscription to applications that are charged on a periodic basis
        * such as monthly, weekly, or quarterly.
-       * 
+       *
        * @param data Data to create a new subscription
        * @returns Subscription data
        */
-      subscription(data: SubscriptionCreateData): Promise<SubscriptionData>
+      subscription(data: SubscriptionCreateData): Promise<SubscriptionData>;
 
       /**
        * Experimental event emitter. Allows listening to gateway config
@@ -252,7 +270,8 @@ export type PermissionType =
   | "DECRYPT"
   | "SIGNATURE"
   | "ACCESS_ARWEAVE_CONFIG"
-  | "DISPATCH";
+  | "DISPATCH"
+  | "ACCESS_TOKENS";
 
 export interface DispatchResult {
   id: string;
@@ -307,9 +326,8 @@ export enum RecurringPaymentFrequency {
   QUARTERLY = "Quarterly",
   MONTHLY = "Monthly",
   WEEKLY = "Weekly",
-  DAILY = "Daily"
+  DAILY = "Daily",
 }
-
 
 /**
  * Enum for subscription status
@@ -318,7 +336,7 @@ export enum SubscriptionStatus {
   ACTIVE = "Active",
   EXPIRED = "Expired",
   CANCELED = "Canceled",
-  AWAITING_PAYMENT = "Awaiting-Payment"
+  AWAITING_PAYMENT = "Awaiting-Payment",
 }
 
 /**
@@ -362,5 +380,17 @@ export interface SubscriptionCreateData {
   subscriptionEndDate: Date;
   applicationIcon: string;
 }
+export interface UserTokensOptions {
+  fetchBalance?: boolean;
+}
 
-export { };
+export type UserTokensResult = Array<{
+  Name?: string;
+  Ticker?: string;
+  Logo?: string;
+  Denomination: number;
+  processId: string;
+  balance?: string | null;
+}>;
+
+export {};
