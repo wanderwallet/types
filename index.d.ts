@@ -205,6 +205,16 @@ declare global {
       signDataItem(dataItem: DataItem): Promise<ArrayBufferLike>;
 
       /**
+       * Create and sign an array of DataItems (bundled transaction item),
+       * that can be each then be loaded into "arbundles".
+       *
+       * @param dataItems An array of data items
+       *
+       * @returns An array of Buffers of the signed data items
+       */
+      batchSignDataItem(dataItems: DataItem[]): Promise<ArrayBufferLike[]>;
+
+      /**
        * Create a cryptographic signature for any piece of data for later validation.
        * This function cannot be used to sign transactions or interactions, because the data
        * gets hashed before the signature generation.
