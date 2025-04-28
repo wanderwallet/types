@@ -176,10 +176,14 @@ declare global {
        * Dispatch an Arweave transaction (preferably bundled)
        *
        * @param transaction Transaction to dispatch
+       * @param options Arweave signing options
        *
        * @returns Dispatched transaction ID and type
        */
-      dispatch(transaction: Transaction): Promise<DispatchResult>;
+      dispatch(
+        transaction: Transaction,        
+        options?: SignatureOptions
+      ): Promise<DispatchResult>;
 
       /**
        * Create a deterministic secret based on the input data.
@@ -199,20 +203,28 @@ declare global {
        * that can be loaded into "arbundles".
        *
        * @param dataItem Data item params
+       * @param options Arweave signing options
        *
        * @returns Buffer of the signed data item
        */
-      signDataItem(dataItem: DataItem): Promise<ArrayBufferLike>;
+      signDataItem(
+        dataItem: DataItem,    
+        options?: SignatureOptions
+      ): Promise<ArrayBufferLike>;
 
       /**
        * Create and sign an array of DataItems (bundled transaction item),
        * that can be each then be loaded into "arbundles".
        *
        * @param dataItems An array of data items
+       * @param options Arweave signing options
        *
        * @returns An array of Buffers of the signed data items
        */
-      batchSignDataItem(dataItems: DataItem[]): Promise<ArrayBufferLike[]>;
+      batchSignDataItem(
+        dataItems: DataItem[],        
+        options?: SignatureOptions
+      ): Promise<ArrayBufferLike[]>;
 
       /**
        * Create a cryptographic signature for any piece of data for later validation.
