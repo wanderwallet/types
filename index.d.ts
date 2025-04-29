@@ -164,6 +164,15 @@ declare global {
       userTokens(options?: UserTokensOptions): Promise<UserTokensResult>;
 
       /**
+       * Retrieves token balance from the user's active wallet.
+       *
+       * @param id - The unique identifier (processId) of the token.
+       * @returns A Promise resolving to the token balance as a string.
+       * @throws An error if the balance cannot be retrieved.
+       */
+      tokenBalance(id: string): Promise<string>;
+
+      /**
        * Checks if a token has been added to ArConnect
        *
        * @param id Token to check for
